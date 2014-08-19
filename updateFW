@@ -1,0 +1,143 @@
+#!/bin/bash
+
+#VIABLE
+VIABLEPATH=VIABLE/vPad/src/
+#SBN
+#VIABLEPATH=VIABLE/sbn_vpad/src/
+cd $VIABLEPATH
+export LANG=""
+########################################################################################################
+###"WARNING: you must be at the base level of vpad project in order for 'updateFW' to run correctly!"###
+########################################################################################################
+
+if [ -f appVersion.dat ]
+then
+	echo
+	echo "Major:.....`cat -n appVersion.dat | grep "^     1" | sed 's/.*	\(.*\)/\1/g'`"
+	echo "Minor:.....`cat -n appVersion.dat | grep "^     2" | sed 's/.*	\(.*\)/\1/g'`"
+	echo "Tag:.......`cat -n appVersion.dat | grep "^     3" | sed 's/.*	\(.*\)/\1/g'`"
+	echo "Revision:..`cat -n appVersion.dat | grep "^     4" | sed 's/.*	\(.*\)/\1/g'`"
+	echo
+else
+	echo
+	echo "'updateFW' was not able to locate appVersion.dat. Aborting."
+	exit 1
+fi
+
+echo "Options for updating appVersion.dat:"
+echo
+echo "Edit values........[y]"
+echo "Use SVN values.....[m]"
+echo "Use file values....[n]"
+echo "Use Magic values...[x]"
+echo
+echo "What is your choice?"
+read answer
+
+echo `pwd`
+if [ "$answer" = "m" ]
+then
+	REVISION=`svnversion -c | cut -d : -f2 | cut -d M -f1 | cut -d S -f1`
+	sed 4s/.*/"$REVISION"/g appVersion.dat > tmp
+	mv tmp appVersion.dat
+	exit 0
+elif [ "$answer" = "x" ]
+then
+	echo 99 > appVersion.dat
+	echo 99 >> appVersion.dat
+	echo Magic >> appVersion.dat
+	echo 99999 >> appVersion.dat
+	exit 0
+elif [ "$answer" = "y" ]
+then
+	echo "proceeding with updating values..."
+	echo
+else
+	exit 0
+fi
+
+cat appVersion.dat | grep version
+sed -i 1,+4d appVersion.dat
+
+
+function isdigit
+	{	# Test if number is digit & not null.
+		 if [ -z "$1" ] ; then
+			return 1
+  		fi
+		
+		# Strip digits with sed. If the nodigits variable is filled then non digits have been passed, thus an error.
+		local nodigits="$(echo $1 | sed 's/[[:digit:]]//g')"
+		
+		if [ ! -z "$nodigits" ] ; then
+    			return 1
+  		fi
+		return 0
+	}
+	
+
+echo 
+echo 
+echo -n "Enter the Major: "
+read upVer
+isdigit $upVer
+
+while(( [ $? -ne 0 ] ) || ( [ $upVer -gt 99 ] ) || ( [ $upVer -lt 0 ] ))
+do
+	echo -n "The major must be a number between 0 and 99,  please enter the major again:"
+	read upVer
+	isdigit $upVer
+done
+
+expr  $upVer  + 0 > appVersion.dat
+
+
+echo -n "Enter the minor: "
+read upVer
+
+isdigit $upVer
+
+while(( [ $? -ne 0 ] ) || ( [ $upVer -gt 99 ] ) || ( [ $upVer -lt 0 ] ))
+do
+        echo -n "The minor  must be  a number between 0 and 99, please enter the minor  again:"
+        read upVer
+	isdigit $upVer
+done
+
+expr $upVer + 0 >> appVersion.dat
+
+
+echo -n "Enter tags: "
+read tags
+
+ echo $tags  >> appVersion.dat
+
+
+svn info 2&> /dev/null
+if [ ! $? ]
+then 
+	echo
+	echo "svn cannot find info. appVersion.dat needs to be edited manually for revision." 
+	echo -n "Please enter the revision number: "
+	read revNum
+else
+	autoRevNum=`svn info | grep Revision | cut -d':' -f 2 | cut -d' ' -f 2`
+	echo -n "Current revision is $autoRevNum. Edit revision number, otherwise leave empty: "
+	read revNum
+	if [ -z $revNum ]
+	then
+		   revNum=`svn info | grep Revision | cut -d':' -f 2 | cut -d' ' -f 2`
+	else
+		isdigit $revNum
+		while(( [ $? -ne 0 ] ) ||( [ $revNum -gt 99999 ] ) || ( [ $revNum -lt 0 ] ))
+			do
+			echo -n "The revision must be a number must be between 0 and 99999,  please enter the revision number: "
+			read revNum
+			isdigit $revNum
+		done
+	fi
+fi
+
+#sed '/revision/s/[0-9][0-9]*/'$revNum'/' appVersion.dat > tmpdat
+#mv tmpdat appVersion.dat
+expr $revNum + 0 >> appVersion.dat

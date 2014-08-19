@@ -1,0 +1,28 @@
+#! /bin/sh
+while true;
+do
+#USB memory
+	if [ -e /proc/scsi/usb-storage ] && [ -e /dev/sda1 ] && [ "$USB" != "MOUNT" ]; then
+		umount /mnt/usb
+		echo "Mounting...."
+		mount -t vfat /dev/sda1 /mnt/usb && USB=MOUNT
+		#mount -t vfat -r /dev/sda1 /mnt/usb && USB=MOUNT		#read only
+	fi
+	if [ ! -e /proc/scsi/usb-storage ] && [ "$USB" = "MOUNT" ]; then
+		echo "Unmounting..."
+		umount /mnt/usb && USB=UMOUNT
+	fi
+#SD/mmc card
+	if [ -e /dev/mmcblk0p1 ] && [ "$MMC" != "MOUNT" ]; then
+                umount /mnt/mmc
+                echo "Mounting SD_card ...."
+                mount -t vfat /dev/mmcblk0p1 /mnt/mmc && MMC=MOUNT
+	fi
+	if [ ! -e /dev/mmcblk0p1 ] && [ "$MMC" = "MOUNT" ]; then
+                echo "Unmounting SD_card ..."
+                umount /mnt/mmc && MMC=UMOUNT
+	fi
+#
+	sleep 1
+done			
+

@@ -1,0 +1,273 @@
+#!/bin/sh
+
+if [ `echo $PWD | sed 's!.*/!!g'` != "FW" ]
+then
+	echo "You need to change to FW/ before running 'collect'."
+	exit 1
+fi
+
+echo "Cleaning up files..."
+for x in new_*
+do
+	echo "removing $x"
+	rm "$x"
+done
+
+for x in chksum_*
+do
+	echo "removing $x"
+	rm "$x"
+done
+
+for x in *.tar*
+do
+	echo "removing $x"
+	rm "$x"
+done
+
+for x in *.md5
+do
+	echo "removing $x"
+	rm "$x"
+done
+
+if [ -z "$1" ]
+then
+	   echo "Please enter the name of the kernel that resides in /tftpboot to be used for vpad. DO NOT MISSPELL! "
+	read kerver
+else
+	kerver="kernel.viable_rev$1"
+fi
+echo "kerver $kerver"
+
+pwd | sed 's/\// /g' > abcdefgh
+w=`wc -w abcdefgh | cut -d' ' -f1`
+VPADGROUP=`cat abcdefgh | cut -d' ' -f$w`
+rm abcdefgh
+
+if [ ! -d /tftpboot/$VPADGROUP ]
+then
+	echo "/tftpboot/$VPADGROUP does not exist"
+	exit 1
+fi
+
+if [ -z "$2" ]
+then
+	echo -n "Please enter the memsize of the build release: "
+	read build
+else
+	   build=$2
+fi
+echo "build $build"
+
+if [ -z "$3" ]
+then
+	echo -n "Please enter the HW code [1.0, 2.0, 2.2a]: "
+	read machine
+else
+	machine=$3
+fi
+echo "machine $machine"
+
+MAJOR=`cat -n ../VIABLE/vPad/src/appVersion.dat | grep -e "1	" | cut -d "	" -f2`
+MINOR=`cat -n ../VIABLE/vPad/src/appVersion.dat | grep -e "2	" | cut -d "	" -f2`
+TAG=`cat -n ../VIABLE/vPad/src/appVersion.dat | grep -e "3	" | cut -d "	" -f2 | cut -d " " -f1 | sed 's/(.*)//g'`
+REVNUM=`cat -n ../VIABLE/vPad/src/appVersion.dat | grep -e "4	" | cut -d "	" -f2`
+
+if [ $? -ne 0 ]
+then
+	echo error $? aborting
+	exit 1
+fi
+
+echo cp /tftpboot/$VPADGROUP/cmemk.ko cmemk.ko
+cp /tftpboot/$VPADGROUP/cmemk.ko cmemk.ko
+
+echo cp /tftpboot/$VPADGROUP/davinci_HRT_driver.ko davinci_HRT_driver.ko
+cp /tftpboot/$VPADGROUP/davinci_HRT_driver.ko davinci_HRT_driver.ko
+
+echo cp /tftpboot/$VPADGROUP/davinci_rsz_driver.ko davinci_rsz_driver.ko
+cp /tftpboot/$VPADGROUP/davinci_rsz_driver.ko davinci_rsz_driver.ko
+
+if [ $build -eq 128 ]
+then
+	echo cp /tftpboot/$VPADGROUP/dsplinkk_128.ko dsplinkk_128.ko
+	cp /tftpboot/$VPADGROUP/dsplinkk_128.ko dsplinkk_128.ko
+	echo cp /tftpboot/$VPADGROUP/ipvp_mkit_dsp_128.out .
+	cp /tftpboot/$VPADGROUP/ipvp_mkit_dsp_128.out .
+else
+	echo cp /tftpboot/$VPADGROUP/dsplinkk_256.ko dsplinkk_256.ko
+	cp /tftpboot/$VPADGROUP/dsplinkk_256.ko dsplinkk_256.ko
+	echo cp /tftpboot/$VPADGROUP/ipvp_mkit_dsp_256.out .
+	cp /tftpboot/$VPADGROUP/ipvp_mkit_dsp_256.out .
+fi
+
+echo cp /tftpboot/$VPADGROUP/loadmodules.sh loadmodules.sh
+cp /tftpboot/$VPADGROUP/loadmodules.sh loadmodules.sh
+
+echo cp /tftpboot/$VPADGROUP/EPConfig.val EPConfig.val
+cp /tftpboot/$VPADGROUP/EPConfig.val EPConfig.val
+
+echo cp /tftpboot/$VPADGROUP/vpad vpad
+cp /tftpboot/$VPADGROUP/vpad vpad
+
+echo cp /tftpboot/$VPADGROUP/revision.txt revision.txt
+cp /tftpboot/$VPADGROUP/revision.txt revision.txt
+
+cp ../revision.txt revision.txt
+
+# kernel
+if [ -e /tftpboot/$kerver ] 
+then
+	echo "copying /tftpboot/${kerver} to new_kernel"
+	cp /tftpboot/$kerver new_kernel
+else
+	echo "kernel: $kerver not found"
+	echo "Aborting collect"
+	exit 1
+fi
+
+echo : KERNEL_VERSION=$kerver | paste -d' ' revision.txt - > r.txt
+mv r.txt revision.txt
+
+
+# kernel
+md5sum new_kernel > chksum_kernel
+cp kernel_up new_kernel_up
+md5sum new_kernel_up > chksum_kernel_up
+
+chmod 755 *
+
+# codecs
+mv cmemk.ko new_cmemk.ko
+md5sum new_cmemk.ko > chksum_cmemk.ko
+
+mv davinci_HRT_driver.ko new_davinci_HRT_driver.ko
+md5sum new_davinci_HRT_driver.ko > chksum_davinci_HRT_driver.ko
+
+mv davinci_rsz_driver.ko new_davinci_rsz_driver.ko
+md5sum new_davinci_rsz_driver.ko > chksum_davinci_rsz_driver.ko
+
+if [ $build -eq 128 ]
+then
+
+	# copy memsize 128 modules and script
+
+	mv dsplinkk_128.ko new_dsplinkk_128.ko
+	md5sum new_dsplinkk_128.ko > chksum_dsplinkk_128.ko
+	mv ipvp_mkit_dsp_128.out new_ipvp_mkit_dsp_128.out
+	md5sum new_ipvp_mkit_dsp_128.out > chksum_ipvp_mkit_dsp_128.out
+
+	cp vpad_upgrade_128.sh vpad_upgrade_big.sh
+
+else
+
+	# copy memsize 256 modules and script
+
+	mv dsplinkk_256.ko new_dsplinkk_256.ko
+	md5sum new_dsplinkk_256.ko > chksum_dsplinkk_256.ko
+	mv ipvp_mkit_dsp_256.out new_ipvp_mkit_dsp_256.out
+	md5sum new_ipvp_mkit_dsp_256.out > chksum_ipvp_mkit_dsp_256.out
+
+	cp vpad_upgrade_256.sh vpad_upgrade_big.sh
+
+fi
+
+mv loadmodules.sh new_loadmodules.sh
+md5sum new_loadmodules.sh > chksum_loadmodules.sh
+
+mv EPConfig.val new_EPConfig.val
+md5sum new_EPConfig.val > chksum_EPConfig.val
+
+# make new_vpad and checksum file
+mv vpad new_vpad
+md5sum new_vpad > new_chksum
+
+# make new vpad.sh and checksum file
+cp vpad_boot new_vpad_boot
+md5sum new_vpad_boot > chksum_vpad_boot
+
+# make new_usb and checksum file
+cp usb new_usb
+md5sum new_usb > chksum_usb
+
+
+# tar all files
+rev=`cat revision.txt | cut -d':' -f2 | cut -d' ' -f2`
+chmod 755 *
+TARBALL="${MAJOR}.${MINOR}${TAG}_${REVNUM}_${machine}.tar"
+MD5SUM="${MAJOR}.${MINOR}${TAG}_${REVNUM}_${machine}.md5"
+BIGTARBALL="new_vpad_big"
+tar -cf "${BIGTARBALL}.tar" sntp DejaVuSans*.ttf bootenv_up viable_logo.yuv aescrypt revision.txt chksum_* new_* vpad_upgrade_big.sh vpad_loader.sh
+if [ $? -eq 0 ] 
+then
+        echo "SUCCESS: created ${BIGTARBALL}.tar"
+else
+	echo "FAILED: creating ${TARBALL}.tar"
+	echo CLEANING UP files...
+	rm new_* chksum_* *.tar* *.md5
+	exit 1
+fi
+
+bzip2 -c new_vpad_big.tar > new_vpad_big.tar.bz2
+
+DGST=`md5sum new_vpad_big.tar.bz2`
+sed "/^DIGEST/s/\".*\"/\"$DGST\"/g" vpad_upgrade.sh > tmp.sh
+mv tmp.sh vpad_upgrade.sh
+chmod 755 ./vpad_upgrade.sh
+chmod 755 ./upgrade_script
+tar -cf "$TARBALL" ./vpad_upgrade.sh ./new_vpad_big.tar.bz2 ./upgrade_script
+
+chmod 755 "$TARBALL"
+if [ $? -eq 0 ] 
+then
+        echo "SUCCESS: chmod 755 of $TARBALL"
+else
+	echo "FAILED: chmod 755 of $TARBALL"
+	echo CLEANING UP files...
+	rm new_* chksum_* *.tar* *.md5
+	exit 1
+fi
+
+cp "$TARBALL" new_vpad_usb.tar
+if [ $? -eq 0 ] 
+then
+        echo "SUCCESS: copying $TARBALL into USB tarball"
+else
+	echo "FAILED: copying $TARBALL into USB tarball"
+	echo CLEANING UP files...
+	rm new_* chksum_* *.tar* *.md5
+	exit 1
+fi
+
+md5sum "$TARBALL" > "$MD5SUM"
+if [ $? -eq 0 ] 
+then
+        echo "SUCCESS: creating $MD5SUM"
+	SUM=$(md5sum "$TARBALL") 
+	DIGEST=$(cat "$MD5SUM") 
+	if [ "$SUM" != "$DIGEST" ]
+	then
+		echo FAILED: mismatch md5sum check
+		echo CLEANING UP files...
+		rm new_* chksum_* *.tar* *.md5
+	else
+		echo SUCCESS: md5 chksum match
+		echo -n "CHECKSUM: "
+		cat "$MD5SUM"
+	fi
+fi
+
+if [ -f new_vpad_usb.tar ]
+then
+	devcrypt -e -p "xF03:3FOoP2#1)0" -o new_vpad_usb.tar.aes new_vpad_usb.tar >> /dev/null
+	if [ $? -eq 0 ] 
+	then
+		echo SUCCESS: encrypting file new_vpad_usb.tar.aes
+		rm new_vpad_usb.tar
+	else
+		echo "FAILED: encrypting file new_vpad_usb.tar.aes"
+		echo "CLEANING UP files..."
+		rm new_* chksum_* *.tar* *.md5
+	fi
+fi

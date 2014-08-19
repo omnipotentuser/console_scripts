@@ -1,0 +1,62 @@
+#########################################################################################
+#
+# README 
+#
+# documentation summary of the scripts pool at FW/
+#
+# Maintained by Viable Inc., 2008
+# Last edited:		Nicholas Buchanan
+# Date: 		Sept 18 2008
+# Rev:			May 19, 2009
+#
+#########################################################################################
+
+
+FILE: new_vpad_usb.tar.aes
+
+Mostly used to upgrade VPADs that are stuck without network access.
+
+FILE: collect
+
+Generates new_* and chksum_* files to be put into a tarball file. MD5 files of the tarball
+is generated along with encrypted package and will overwrite the encrypted file 
+'new_vpad_usb.tar.aes'.
+
+#online documentation for OpenSSL
+http://madboa.com/geek/openssl/
+
+#generate private key of 1024 bit and redirect to file
+openssl genrsa -out vpad_private.pem 1024
+
+#generate public key from private key from file and redirect to file
+openssl rsa -in vpad_private.pem -pubout -out vpad_public.pem
+
+#signing a digest encrypting into binary using viable private key and redirect to output file
+openssl dgst -md5 -sign viable_private.pem -out config.xml.sig config.xml
+
+#signing a digest encrypting into hex using viable private key and redirect to output file
+openssl dgst -hex -md5 -sign viable_private.pem -out config.xml.sig config.xml
+
+#signing a digest encrypting into base64 using viable private key and redirect to output file
+openssl dgst -md5 -sign viable_private.pem config.xml | openssl enc -base64 -out config.xml.sig
+
+#verifying the signed digest using viable public key
+openssl dgst -md5 -verify viable_public.pem -signature config.xml.sig config.xml
+
+#signing config.xml using RSA private key
+openssl rsautl -sign -inkey viable_private.pem -in config.xml -out config.xml.rsa
+
+#verifying config.xml.rsa using RSA public key
+openssl rsautl -verify -pubin -inkey viable_public.pem -in config.xml.rsa
+
+#encrypting file using vpad public key
+openssl rsautl -encrypt -inkey vpad_public.pem -pubin -in config.xml -out config.xml.ssl
+
+#decrypting file using vpad private key
+openssl rsautl -decrypt -inkey vpad_private.pem -in config.xml.ssl -out config.xml
+
+
+#extract release notes from Rally
+#Firstly, in Rally, go to "Dashboards", -> "Release Status", -> "State = Accepted", -> "Filter", -> "Actions = Export to CVS"
+#Secondly, run command to format:
+cat vpad_5.11.csv | cut -d , -f1,2 | sed "s/\"//g; s/,/\t/"

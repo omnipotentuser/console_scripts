@@ -1,0 +1,14 @@
+#!/bin/bash
+
+pwd | sed 's/\// /g' > abcdefgh
+w=`wc -w abcdefgh | cut -d' ' -f1`
+w=`expr $w + 1`
+uniqpath=`cat abcdefgh | cut -d' ' -f$w`
+rm abcdefgh
+if [ -d "/home/ftp/pub/$uniqpath" ]
+then
+	echo /home/ftp/pub/$uniqpath already exists. Skipping.
+else
+	mkdir /home/ftp/pub/$uniqpath
+	chmod 755 /home/ftp/pub/$uniqpath
+fi

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# extracts the current directory when running getPath
+#
+# example: 
+# [/viable/DEV/vpad1.0/ $ ] FW/getPath # output is vpad1.0
+  
+
+pwd | sed 's/\// /g' > abcdefgh
+w=`wc -w abcdefgh | cut -d' ' -f1`
+w=`expr $w + 1`
+cat abcdefgh | cut -d' ' -f$w
+rm abcdefgh

@@ -1,0 +1,97 @@
+#!/bin/bash
+
+abort()
+{
+	if [ $# -gt 1 ]
+	then
+		echo failed to process $$ $0 because $1
+	else
+		echo failed to process $$ $0
+	fi
+	echo process $$ exiting
+	exit 1
+}
+
+if [ ! -e /home/viable/logs ]
+then
+	mkdir /home/viable/logs
+else
+	echo >> /home/viable/logs/tarball_build.log
+	echo >> /home/viable/logs/tarball_build.log
+	echo >> /home/viable/logs/tarball_build.log
+	echo ****************************************************** >> /home/viable/logs/tarball_build.log
+	echo >> /home/viable/logs/tarball_build.log
+	echo >> /home/viable/logs/tarball_build.log
+	echo >> /home/viable/logs/tarball_build.log
+fi
+
+echo `date` >> /home/viable/logs/tarball_build.log
+echo Welcome to `hostname`! >> /home/viable/logs/tarball_build.log
+
+echo -n "Which group do you want to build? [DEV, ALPHA, PRODUCTION]: "
+read GROUP
+
+if [ $GROUP = "DEV" ] || [ $GROUP = "ALPHA" ] || [ $GROUP = "PRODUCTION" ]
+then
+	echo -n "Which vpad version do you want to build? [1.0, 2.0, 2.2a]: "
+	read VPADVER
+
+	if [ $VPADVER = "1.0" ] || [ $VPADVER = "2.0" ] || [ $VPADVER = "2.2a" ]
+	then
+		echo -n "Enter the Major [ex: 5]: "
+		read MAJOR
+		echo -n "Enter the Minor [ex: 12]: "
+		read MINOR
+		echo -n "Enter the TAG if needed [ex: RC3, RC1+, RC2+ (2.2a), VPAD, VPAD+, VPAD+ (2.2a)]: "
+		read TAG
+		echo -n "Enter the kernel version [ex: 013]: "
+		read KERNEL
+		echo -n "Enter the name of the SVN leaf dir [ex: tags, trunk, trunk_5.12, etc]: "
+		read LEAF
+		echo -n "Enter the name of the RESPOSITORY checkout [ex: 5.12-RC2]: "
+		read REPOSITORY
+		echo changing to /viable/$GROUP >> /home/viable/logs/tarball_build.log
+		cd /viable/$GROUP
+
+		echo removing /viable/$GROUP/vpad${VPADVER} for clean update >> /home/viable/logs/tarball_build.log
+		sudo rm -rf /viable/$GROUP/vpad${VPADVER}
+
+		echo -n "Enter the revision number or just HEAD [ex: 5045]: "
+		read REVISION
+		echo "updating with most current source code from /svn/vPad/$LEAF/$REPOSITORY to $VPADVER" >> /home/viable/logs/tarball_build.log
+		svn co -r$REVISION svn://svn.office.viable.net/vPad/$LEAF/$REPOSITORY vpad${VPADVER}
+		echo cd /viable/$GROUP/vpad${VPADVER} >> /home/viable/logs/tarball_build.log
+		cd vpad${VPADVER}
+
+		SVNREV=`svnversion -c | cut -d : -f2 | cut -d M -f1 | cut -d S -f1`
+
+		if [ $VPADVER = "1.0" ]
+		then
+			VMEM=128
+		else
+			VMEM=256
+		fi
+
+		echo "$MAJOR" > VIABLE/vPad/src/appVersion.dat
+		echo "$MINOR">> VIABLE/vPad/src/appVersion.dat
+		echo "$TAG" >> VIABLE/vPad/src/appVersion.dat
+		echo "$SVNREV" >> VIABLE/vPad/src/appVersion.dat
+
+		case $VPADVER in
+			"1.0") make config_vpad_1_0 ;;
+			"2.0") make config_vpad_2_0 ;;
+			"2.2a") make config_vpad_2_2 ;;
+		esac
+		echo | make
+		echo y | make install
+		cd /viable/$GROUP/vpad${VPADVER}/FW
+		echo Entering FW stage
+		echo
+		echo
+		./collect $KERNEL $VMEM $VPADVER
+	else
+		abort "no such version $VPADVER"
+	fi
+else
+	abort "no such group $GROUP"
+fi

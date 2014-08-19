@@ -2,10 +2,28 @@
 
 echo moving files to another dir
 
-for x in `ls`
-do
-  if [ ! -d "$x" ]
-  then
-    echo "moving $x to $y"
-  fi
-done
+echo
+echo
+echo "Type the files you want moved, followed by [ENTER]:"
+
+read files
+
+echo "Type the directory that you want to move files to, followed by [ENTER]:"
+
+read directory
+
+if [ -d "$directory" ]
+then
+	for x in $files
+	do
+		if [ ! -d "$x" ]
+		then
+	  		echo "moving $x to $directory"
+			mv $x $directory
+
+		fi
+	done
+else
+	echo Directory $directory does not exist. Aborting.
+fi
+

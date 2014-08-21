@@ -33,21 +33,21 @@ done
 
 if [ -z "$1" ]
 then
-	   echo "Please enter the name of the kernel that resides in /tftpboot to be used for vpad. DO NOT MISSPELL! "
+	   echo "Please enter the name of the kernel that resides in /tftpboot to be used for nick. DO NOT MISSPELL! "
 	read kerver
 else
-	kerver="kernel.viable_rev$1"
+	kerver="kernel.hack$1"
 fi
 echo "kerver $kerver"
 
 pwd | sed 's/\// /g' > abcdefgh
 w=`wc -w abcdefgh | cut -d' ' -f1`
-VPADGROUP=`cat abcdefgh | cut -d' ' -f$w`
+nick=`cat abcdefgh | cut -d' ' -f$w`
 rm abcdefgh
 
-if [ ! -d /tftpboot/$VPADGROUP ]
+if [ ! -d /tftpboot/$nick ]
 then
-	echo "/tftpboot/$VPADGROUP does not exist"
+	echo "/tftpboot/$nick does not exist"
 	exit 1
 fi
 
@@ -69,10 +69,10 @@ else
 fi
 echo "machine $machine"
 
-MAJOR=`cat -n ../VIABLE/vPad/src/appVersion.dat | grep -e "1	" | cut -d "	" -f2`
-MINOR=`cat -n ../VIABLE/vPad/src/appVersion.dat | grep -e "2	" | cut -d "	" -f2`
-TAG=`cat -n ../VIABLE/vPad/src/appVersion.dat | grep -e "3	" | cut -d "	" -f2 | cut -d " " -f1 | sed 's/(.*)//g'`
-REVNUM=`cat -n ../VIABLE/vPad/src/appVersion.dat | grep -e "4	" | cut -d "	" -f2`
+MAJOR=`cat -n ../HACK/nick/src/appVersion.dat | grep -e "1	" | cut -d "	" -f2`
+MINOR=`cat -n ../HACK/nick/src/appVersion.dat | grep -e "2	" | cut -d "	" -f2`
+TAG=`cat -n ../HACK/nick/src/appVersion.dat | grep -e "3	" | cut -d "	" -f2 | cut -d " " -f1 | sed 's/(.*)//g'`
+REVNUM=`cat -n ../HACK/nick/src/appVersion.dat | grep -e "4	" | cut -d "	" -f2`
 
 if [ $? -ne 0 ]
 then
@@ -80,39 +80,39 @@ then
 	exit 1
 fi
 
-echo cp /tftpboot/$VPADGROUP/cmemk.ko cmemk.ko
-cp /tftpboot/$VPADGROUP/cmemk.ko cmemk.ko
+echo cp /tftpboot/$nick/cmemk.ko cmemk.ko
+cp /tftpboot/$nick/cmemk.ko cmemk.ko
 
-echo cp /tftpboot/$VPADGROUP/davinci_HRT_driver.ko davinci_HRT_driver.ko
-cp /tftpboot/$VPADGROUP/davinci_HRT_driver.ko davinci_HRT_driver.ko
+echo cp /tftpboot/$nick/davinci_HRT_driver.ko davinci_HRT_driver.ko
+cp /tftpboot/$nick/davinci_HRT_driver.ko davinci_HRT_driver.ko
 
-echo cp /tftpboot/$VPADGROUP/davinci_rsz_driver.ko davinci_rsz_driver.ko
-cp /tftpboot/$VPADGROUP/davinci_rsz_driver.ko davinci_rsz_driver.ko
+echo cp /tftpboot/$nick/davinci_rsz_driver.ko davinci_rsz_driver.ko
+cp /tftpboot/$nick/davinci_rsz_driver.ko davinci_rsz_driver.ko
 
 if [ $build -eq 128 ]
 then
-	echo cp /tftpboot/$VPADGROUP/dsplinkk_128.ko dsplinkk_128.ko
-	cp /tftpboot/$VPADGROUP/dsplinkk_128.ko dsplinkk_128.ko
-	echo cp /tftpboot/$VPADGROUP/ipvp_mkit_dsp_128.out .
-	cp /tftpboot/$VPADGROUP/ipvp_mkit_dsp_128.out .
+	echo cp /tftpboot/$nick/dsplinkk_128.ko dsplinkk_128.ko
+	cp /tftpboot/$nick/dsplinkk_128.ko dsplinkk_128.ko
+	echo cp /tftpboot/$nick/ipvp_mkit_dsp_128.out .
+	cp /tftpboot/$nick/ipvp_mkit_dsp_128.out .
 else
-	echo cp /tftpboot/$VPADGROUP/dsplinkk_256.ko dsplinkk_256.ko
-	cp /tftpboot/$VPADGROUP/dsplinkk_256.ko dsplinkk_256.ko
-	echo cp /tftpboot/$VPADGROUP/ipvp_mkit_dsp_256.out .
-	cp /tftpboot/$VPADGROUP/ipvp_mkit_dsp_256.out .
+	echo cp /tftpboot/$nick/dsplinkk_256.ko dsplinkk_256.ko
+	cp /tftpboot/$nick/dsplinkk_256.ko dsplinkk_256.ko
+	echo cp /tftpboot/$nick/ipvp_mkit_dsp_256.out .
+	cp /tftpboot/$nick/ipvp_mkit_dsp_256.out .
 fi
 
-echo cp /tftpboot/$VPADGROUP/loadmodules.sh loadmodules.sh
-cp /tftpboot/$VPADGROUP/loadmodules.sh loadmodules.sh
+echo cp /tftpboot/$nick/loadmodules.sh loadmodules.sh
+cp /tftpboot/$nick/loadmodules.sh loadmodules.sh
 
-echo cp /tftpboot/$VPADGROUP/EPConfig.val EPConfig.val
-cp /tftpboot/$VPADGROUP/EPConfig.val EPConfig.val
+echo cp /tftpboot/$nick/EPConfig.val EPConfig.val
+cp /tftpboot/$nick/EPConfig.val EPConfig.val
 
-echo cp /tftpboot/$VPADGROUP/vpad vpad
-cp /tftpboot/$VPADGROUP/vpad vpad
+echo cp /tftpboot/$nick/nick nick
+cp /tftpboot/$nick/nick nick
 
-echo cp /tftpboot/$VPADGROUP/revision.txt revision.txt
-cp /tftpboot/$VPADGROUP/revision.txt revision.txt
+echo cp /tftpboot/$nick/revision.txt revision.txt
+cp /tftpboot/$nick/revision.txt revision.txt
 
 cp ../revision.txt revision.txt
 
@@ -158,7 +158,7 @@ then
 	mv ipvp_mkit_dsp_128.out new_ipvp_mkit_dsp_128.out
 	md5sum new_ipvp_mkit_dsp_128.out > chksum_ipvp_mkit_dsp_128.out
 
-	cp vpad_upgrade_128.sh vpad_upgrade_big.sh
+	cp nick.sh nick.sh
 
 else
 
@@ -169,7 +169,7 @@ else
 	mv ipvp_mkit_dsp_256.out new_ipvp_mkit_dsp_256.out
 	md5sum new_ipvp_mkit_dsp_256.out > chksum_ipvp_mkit_dsp_256.out
 
-	cp vpad_upgrade_256.sh vpad_upgrade_big.sh
+	cp nick.sh nick.sh
 
 fi
 
@@ -179,13 +179,13 @@ md5sum new_loadmodules.sh > chksum_loadmodules.sh
 mv EPConfig.val new_EPConfig.val
 md5sum new_EPConfig.val > chksum_EPConfig.val
 
-# make new_vpad and checksum file
-mv vpad new_vpad
-md5sum new_vpad > new_chksum
+# make new_nick and checksum file
+mv nick new_nick
+md5sum new_nick > new_chksum
 
-# make new vpad.sh and checksum file
-cp vpad_boot new_vpad_boot
-md5sum new_vpad_boot > chksum_vpad_boot
+# make new nick.sh and checksum file
+cp nick new_nick
+md5sum new_nick > chksum_nick
 
 # make new_usb and checksum file
 cp usb new_usb
@@ -197,8 +197,8 @@ rev=`cat revision.txt | cut -d':' -f2 | cut -d' ' -f2`
 chmod 755 *
 TARBALL="${MAJOR}.${MINOR}${TAG}_${REVNUM}_${machine}.tar"
 MD5SUM="${MAJOR}.${MINOR}${TAG}_${REVNUM}_${machine}.md5"
-BIGTARBALL="new_vpad_big"
-tar -cf "${BIGTARBALL}.tar" sntp DejaVuSans*.ttf bootenv_up viable_logo.yuv aescrypt revision.txt chksum_* new_* vpad_upgrade_big.sh vpad_loader.sh
+BIGTARBALL="new_nick"
+tar -cf "${BIGTARBALL}.tar" sntp DejaVuSans*.ttf bootenv_up hack.yuv aescrypt revision.txt chksum_* new_* nick.sh nick.sh
 if [ $? -eq 0 ] 
 then
         echo "SUCCESS: created ${BIGTARBALL}.tar"
@@ -209,14 +209,14 @@ else
 	exit 1
 fi
 
-bzip2 -c new_vpad_big.tar > new_vpad_big.tar.bz2
+bzip2 -c new_nick.tar > new_nick.tar.bz2
 
-DGST=`md5sum new_vpad_big.tar.bz2`
-sed "/^DIGEST/s/\".*\"/\"$DGST\"/g" vpad_upgrade.sh > tmp.sh
-mv tmp.sh vpad_upgrade.sh
-chmod 755 ./vpad_upgrade.sh
+DGST=`md5sum new_nick.tar.bz2`
+sed "/^DIGEST/s/\".*\"/\"$DGST\"/g" nick.sh > tmp.sh
+mv tmp.sh nick.sh
+chmod 755 ./nick.sh
 chmod 755 ./upgrade_script
-tar -cf "$TARBALL" ./vpad_upgrade.sh ./new_vpad_big.tar.bz2 ./upgrade_script
+tar -cf "$TARBALL" ./nick.sh ./new_nick.tar.bz2 ./upgrade_script
 
 chmod 755 "$TARBALL"
 if [ $? -eq 0 ] 
@@ -229,7 +229,7 @@ else
 	exit 1
 fi
 
-cp "$TARBALL" new_vpad_usb.tar
+cp "$TARBALL" new_nick.tar
 if [ $? -eq 0 ] 
 then
         echo "SUCCESS: copying $TARBALL into USB tarball"
@@ -258,15 +258,15 @@ then
 	fi
 fi
 
-if [ -f new_vpad_usb.tar ]
+if [ -f new_nick.tar ]
 then
-	devcrypt -e -p "xF03:3FOoP2#1)0" -o new_vpad_usb.tar.aes new_vpad_usb.tar >> /dev/null
+	devcrypt -e -p "xF03:3FOoP2#1)0" -o new_nick.tar.aes new_nick.tar >> /dev/null
 	if [ $? -eq 0 ] 
 	then
-		echo SUCCESS: encrypting file new_vpad_usb.tar.aes
-		rm new_vpad_usb.tar
+		echo SUCCESS: encrypting file new_nick.tar.aes
+		rm new_nick.tar
 	else
-		echo "FAILED: encrypting file new_vpad_usb.tar.aes"
+		echo "FAILED: encrypting file new_nick.tar.aes"
 		echo "CLEANING UP files..."
 		rm new_* chksum_* *.tar* *.md5
 	fi

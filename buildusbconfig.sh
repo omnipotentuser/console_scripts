@@ -5,7 +5,7 @@ CONFIG=""
 VALUE=""
 
 counter=0
-for x in `grep "table.insert" VIABLE/vPad/src/viable_config.cpp | cut -d "\"" -f 2`
+for x in `grep "table.insert" nick/foo/src/hack.cpp | cut -d "\"" -f 2`
 do
 	if [ "$x" != "--BEGIN--" ] && [ "$x" != "--END--" ]
 	then
@@ -15,14 +15,14 @@ do
 		counter=`expr $counter + 1`
 	fi
 done
-grep VDEF_CONFIG VIABLE/vPad/src/model/ACIFHandlerDefaults.h | cut -d \" -f 2 > tmpconfigfile.tmp
-lines=`grep VDEF_CONFIG VIABLE/vPad/src/model/ACIFHandlerDefaults.h | cut -d \" -f 2 | wc -l`
+grep VDEF_CONFIG nick/foo/src/model/ACIFHandlerDefaults.h | cut -d \" -f 2 > tmpconfigfile.tmp
+lines=`grep VDEF_CONFIG nick/foo/src/model/ACIFHandlerDefaults.h | cut -d \" -f 2 | wc -l`
 for ((counter = 0, pos = 1; counter < $lines; counter += 1, pos += 1))
 do
 	VALUE[$counter]=`sed -n "$pos"p tmpconfigfile.tmp`
 	#echo ${VALUE[$counter]}
 done
-#for x in `grep VDEF_CONFIG VIABLE/vPad/src/model/ACIFHandlerDefaults.h | cut -d \" -f 2`
+#for x in `grep VDEF_CONFIG nick/foo/src/model/ACIFHandlerDefaults.h | cut -d \" -f 2`
 #do
 	#VALUE[$counter]="$x"
 	#echo ${VALUE[$counter]}
@@ -97,8 +97,8 @@ echo -n "Does the file look ok? [y/n] "
 read VERIFY
 if [ $VERIFY == "y" ]
 then
-	openssl dgst -md5 -sign FW/viable_private.pem FW/config.xml | openssl enc -base64 -out FW/config.xml.sig
-	#openssl dgst -md5 -hex -sign FW/viable_private.pem -out FW/config.xml.sig FW/config.xml
+	openssl dgst -md5 -sign FW/hack.pem FW/config.xml | openssl enc -base64 -out FW/config.xml.sig
+	#openssl dgst -md5 -hex -sign FW/hack.pem -out FW/config.xml.sig FW/config.xml
 	cat FW/config.xml.sig >> FW/config.xml
 else
 	echo "Aborting generating config file."
@@ -112,5 +112,5 @@ echo
 echo Done creating config file.
 echo Copy FW/config.xml to your /mnt/usb directory after mounting USB.
 echo
-echo Please test the config file on your VPAD before distributing.
+echo Please test the config file on your foo before distributing.
 echo

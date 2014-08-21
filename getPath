@@ -3,7 +3,7 @@
 # extracts the current directory when running getPath
 #
 # example: 
-# [/viable/DEV/vpad1.0/ $ ] FW/getPath # output is vpad1.0
+# [/open/DEV/hack1.0/ $ ] FW/getPath # output is hack1.0
   
 
 pwd | sed 's/\// /g' > abcdefgh

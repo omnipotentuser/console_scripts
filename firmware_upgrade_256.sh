@@ -1,12 +1,12 @@
 #!/bin/sh
 
-VPAD_EXEC=vpad
-VPAD_NEW=new_vpad
-VPAD_MD5=new_chksum
+HACK_EXEC=hack
+HACK_NEW=new_hack
+HACK_MD5=new_chksum
 
-VPAD_BOOT=vpad.sh
-VPAD_BOOT_NEW=new_vpad_boot
-VPAD_BOOT_MD5=chksum_vpad_boot
+HACK_BOOT=hack.sh
+HACK_BOOT_NEW=new_hack_boot
+HACK_BOOT_MD5=chksum_hack_boot
 
 KERNEL_NEW=new_kernel
 KERNEL_OLD=old_kernel
@@ -73,22 +73,22 @@ rmfiles()
 
 		rm $KERNEL_NEW
 		rm $KERNEL_MD5
-		rm $VPAD_NEW
+		rm $HACK_NEW
 		rm $DAVINCI_HRT_DRIVER_CODEC_NEW
 		rm $DAVINCI_RSZ_DRIVER_CODEC_NEW
 		rm $DSP_LINK_CODEC_256_NEW
 		rm $IPVP_MKIT_DSP_CODEC_256_NEW
 		rm $CMEM_CODEC_NEW
 		rm $LOADMODULES_NEW
-		rm $VPAD_MD5
+		rm $HACK_MD5
 		rm $DAVINCI_HRT_DRIVER_MD5
 		rm $DAVINCI_RSZ_DRIVER_MD5
 		rm $DSP_LINK_256_MD5		
 		rm $IPVP_MKIT_DSP_256_MD5		
 		rm $CMEM_MD5
 		rm $LOADMODULES_MD5
-		rm $VPAD_BOOT_NEW
-		rm $VPAD_BOOT_MD5
+		rm $HACK_BOOT_NEW
+		rm $HACK_BOOT_MD5
 		rm $USBINIT_NEW
 		rm $USBINIT_MD5
 		rm $KERNEL_UP_NEW
@@ -105,9 +105,9 @@ then
         echo "revision file missing" > revision.txt
 fi
 
-echo "tail -n 500 vpad.log > vpad.tmp "
-tail -n 500 vpad.log > vpad.log.tmp
-mv vpad.log.tmp vpad.log
+echo "tail -n 500 hack.log > hack.tmp "
+tail -n 500 hack.log > hack.log.tmp
+mv hack.log.tmp hack.log
 
 if [ -e /Release/$AESCRYPT ]
 then
@@ -119,23 +119,23 @@ then
 	mv -f /Release/$SNTP /bin
 fi
 
-echo >> vpad.log
-echo "====================================================================" >> vpad.log
-echo "revision: $(cat revision.txt)" >> vpad.log
-echo "date: $curdate" >> vpad.log
-echo "====================================================================" >> vpad.log
-echo >> vpad.log
+echo >> hack.log
+echo "====================================================================" >> hack.log
+echo "revision: $(cat revision.txt)" >> hack.log
+echo "date: $curdate" >> hack.log
+echo "====================================================================" >> hack.log
+echo >> hack.log
 
 ########################################################################################
 # REMOVING EXTRANEOUS FILES 
 ########################################################################################
 
-echo REMOVING EXTRANEOUS FILES >> vpad.log
+echo REMOVING EXTRANEOUS FILES >> hack.log
 if [ -L /usr/local/qtopia-core-arm/lib/fonts ]
 then
-	echo removing symlink /usr/local/qtopia-core-arm/lib/fonts >> vpad.log
+	echo removing symlink /usr/local/qtopia-core-arm/lib/fonts >> hack.log
 	rm /usr/local/qtopia-core-arm/lib/fonts
-	echo making /usr/local/qtopia-core-arm/lib/fonts directory >> vpad.log
+	echo making /usr/local/qtopia-core-arm/lib/fonts directory >> hack.log
 	mkdir /usr/local/qtopia-core-arm/lib/fonts
 else
 	for x in /usr/local/qtopia-core-arm/lib/fonts/*
@@ -143,133 +143,133 @@ else
 		if [ "$x" = "/usr/local/qtopia-core-arm/lib/fonts/DejaVuSans.ttf" ] \
 			|| [ "$x" = "/usr/local/qtopia-core-arm/lib/fonts/DejaVuSans-Bold.ttf" ]
 		then
-			echo keeping $x >> vpad.log
+			echo keeping $x >> hack.log
 		else
-			echo removing $x >> vpad.log
+			echo removing $x >> hack.log
 			rm $x
 		fi
 	done
 fi
 if [ -e /usr/local/Trolltech/QtopiaCore-4.3.0-arm/lib/fonts/DejaVuSans.ttf ] && [ ! -e /usr/local/qtopia-core-arm/lib/fonts/DejaVuSans.ttf ]
 then
-	echo moving DejaVuSans.ttf from /usr/local/Trolltech/QtopiaCore-4.3.0-arm/lib/fonts to /usr/local/qtopia-core/lib/fonts >> vpad.log
+	echo moving DejaVuSans.ttf from /usr/local/Trolltech/QtopiaCore-4.3.0-arm/lib/fonts to /usr/local/qtopia-core/lib/fonts >> hack.log
 	mv /usr/local/Trolltech/QtopiaCore-4.3.0-arm/lib/fonts/DejaVuSans.ttf /usr/local/qtopia-core-arm/lib/fonts
 fi
 if [ ! -e /usr/local/qtopia-core-arm/lib/fonts/$DEJAVUSANSBOLD ]
 then
-	echo inserting $DEJAVUSANSBOLD to /usr/local/qtopia-core/lib/fonts >> vpad.log
+	echo inserting $DEJAVUSANSBOLD to /usr/local/qtopia-core/lib/fonts >> hack.log
 	mv $DEJAVUSANSBOLD /usr/local/qtopia-core-arm/lib/fonts
 else
-	echo $DEJAVUSANSBOLD already exists. Removing from /Release >> vpad.log
+	echo $DEJAVUSANSBOLD already exists. Removing from /Release >> hack.log
 	rm $DEJAVUSANSBOLD
 fi
 if [ ! -e /usr/local/qtopia-core-arm/lib/fonts/$DEJAVUSANS ]
 then
-	echo inserting $DEJAVUSANS to /usr/local/qtopia-core/lib/fonts >> vpad.log
+	echo inserting $DEJAVUSANS to /usr/local/qtopia-core/lib/fonts >> hack.log
 	mv $DEJAVUSANS /usr/local/qtopia-core-arm/lib/fonts
 else
-	echo DejaVuSans.ttf already exists. Removing from /Release >> vpad.log
+	echo DejaVuSans.ttf already exists. Removing from /Release >> hack.log
 	rm $DEJAVUSANS
 fi
 if [ -d /usr/local/Trolltech ]
 then
-	echo removing /usr/local/Trolltech >> vpad.log
+	echo removing /usr/local/Trolltech >> hack.log
 	rm -rf /usr/local/Trolltech
 fi
 if [ -d /usr/local/lib ]
 then
-	echo removing /usr/local/lib >> vpad.log
+	echo removing /usr/local/lib >> hack.log
 	rm -rf /usr/local/lib
 fi
 if [ -d /usr/local/wifi ]
 then
-	echo removing /usr/local/wifi >> vpad.log
+	echo removing /usr/local/wifi >> hack.log
 	rm -rf /usr/local/wifi
 fi
 if [ -d /root/Settings ]
 then
-	echo removing /root/Settings dir >> vpad.log
+	echo removing /root/Settings dir >> hack.log
 	rm -rf /root/Settings
 fi
 if [ -e /root/hwtest.sh ] 
 then
-	echo removing /root/hwtest.sh >> vpad.log
+	echo removing /root/hwtest.sh >> hack.log
 	rm -f /root/hwtest.sh
 fi
 if [ -e /root/longKey.sh ]
 then
-	echo removing /root/longKey.sh >> vpad.log
+	echo removing /root/longKey.sh >> hack.log
 	rm -f /root/longKey.sh
 fi
-if [ -e /root/vpad_mp.sh ]
+if [ -e /root/hack_mp.sh ]
 then
-	echo removing /root/vpad_mp.sh >> vpad.log
-	rm -f /root/vpad_mp.sh
+	echo removing /root/HACK_mp.sh >> hack.log
+	rm -f /root/hack_mp.sh
 fi
-if [ -d /Release/vpad_mp_test ]
+if [ -d /Release/hack_mp_test ]
 then
-	echo removing /Release/vpad_mp_test >> vpad.log
-	rm -rf /Release/vpad_mp_test
+	echo removing /Release/hack_mp_test >> hack.log
+	rm -rf /Release/hack_mp_test
 fi
 if [ -e /Release/old_kernel ]
 then
-	echo removing /Release/old_kernel >> vpad.log
+	echo removing /Release/old_kernel >> hack.log
 	rm -f /Release/old_kernel
 fi
 if [ -e /Release/sbn_logo.yuv ]
 then
-	echo removing /Release/sbn_logo.yuv >> vpad.log
+	echo removing /Release/sbn_logo.yuv >> hack.log
 	rm -f /Release/sbn_logo.yuv
 fi
 if [ -e /Release/mousecalibration ]
 then
-	echo removing /Release/mousecalibration >> vpad.log
+	echo removing /Release/mousecalibration >> hack.log
 	rm -f /Release/mousecalibration
 fi
 if [ -e /Release/longKey ]
 then
-	echo removing /Release/longKey >> vpad.log
+	echo removing /Release/longKey >> hack.log
 	rm -f /Release/longKey
 fi
 if [ -d /Release/ACIFData ]
 then
-	echo removing /Release/ACIFData >> vpad.log
+	echo removing /Release/ACIFData >> hack.log
 	rm -rf /Release/ACIFData
 fi
 if [ -d /Release/HelpFile ]
 then
-	echo removing /Release/HelpFile >> vpad.log
+	echo removing /Release/HelpFile >> hack.log
 	rm -rf /Release/HelpFile
 fi
 if [ -e /Release/hwtest_gui ]
 then
-	echo removing /Release/hwtest_gui >> vpad.log
+	echo removing /Release/hwtest_gui >> hack.log
 	rm -f /Release/hwtest_gui
 fi
 if [ -e /Release/$HIPTXT ]
 then
-	echo removing /Release/$HIPTXT >> vpad.log
+	echo removing /Release/$HIPTXT >> hack.log
 	rm -f /Release/$HIPTXT
 fi
-echo END OF REMOVAL >> vpad.log
+echo END OF REMOVAL >> hack.log
 
 #######################################################################################
 # END OF REMOVAL
 #######################################################################################
 
 if [ -e $KERNEL_UP_NEW ] && [ -e $KERNEL_UP_MD5 ] && [ -e $KERNEL_NEW ] && [ -e $KERNEL_MD5 ] \
-	&& [ -e $VPAD_NEW ] && [ -e $VPAD_BOOT_NEW ] && [ -e $DAVINCI_HRT_DRIVER_CODEC_NEW ] \
+	&& [ -e $HACK_NEW ] && [ -e $HACK_BOOT_NEW ] && [ -e $DAVINCI_HRT_DRIVER_CODEC_NEW ] \
 	&& [ -e $DAVINCI_RSZ_DRIVER_CODEC_NEW ] && [ -e $DSP_LINK_CODEC_256_NEW ] \
 	&& [ -e $IPVP_MKIT_DSP_CODEC_256_NEW ] && [ -e $CMEM_CODEC_NEW ] && [ -e $LOADMODULES_NEW ] \
-	&& [ -e $VPAD_MD5 ] && [ -e $VPAD_BOOT_MD5 ] && [ -e $DAVINCI_HRT_DRIVER_MD5 ] \
+	&& [ -e $HACK_MD5 ] && [ -e $HACK_BOOT_MD5 ] && [ -e $DAVINCI_HRT_DRIVER_MD5 ] \
 	&& [ -e $DAVINCI_RSZ_DRIVER_MD5 ] && [ -e $DSP_LINK_256_MD5 ] && [ -e $IPVP_MKIT_DSP_256_MD5 ] \
 	&& [ -e $CMEM_MD5 ] && [ -e $LOADMODULES_MD5 ] && [ -e $USBINIT_NEW ] && [ -e $USBINIT_MD5 ] \
 	&& [ -e $EPCONFIG_NEW ] && [ -e $EPCONFIG_MD5 ] && [ -e /proc/board_memsize_256 ]
 then
 	echo "files found"
 
-	SUM=$(md5sum $VPAD_NEW)
-	DIGEST=$(cat $VPAD_MD5)
+	SUM=$(md5sum $HACK_NEW)
+	DIGEST=$(cat $HACK_MD5)
 	echo $SUM
 	echo $DIGEST
 
@@ -303,8 +303,8 @@ then
 	echo $SUM8
 	echo $DIGEST8
 
-	SUM9=$(md5sum $VPAD_BOOT_NEW)
-	DIGEST9=$(cat $VPAD_BOOT_MD5)
+	SUM9=$(md5sum $HACK_BOOT_NEW)
+	DIGEST9=$(cat $HACK_BOOT_MD5)
 	echo $SUM9
 	echo $DIGEST9
 
@@ -337,64 +337,64 @@ then
 	then 
 		echo "at least one checksum doesn't match its digest: deleting all new files"
 		rmfiles
-		echo "$curdate: One or more checksum doesn't match digest: abort upgrade" >> vpad.log
+		echo "$curdate: One or more checksum doesn't match digest: abort upgrade" >> hack.log
 
 		exit 2
 	fi
 
-	mv -f $KERNEL_UP_NEW $KERNEL_UP 2>> vpad.log
+	mv -f $KERNEL_UP_NEW $KERNEL_UP 2>> hack.log
 	if [ $? -eq 0 ]
 	then
 
-		./$KERNEL_UP $KERNEL_NEW 2>> vpad.log
+		./$KERNEL_UP $KERNEL_NEW 2>> hack.log
 		if [ $? -eq 0 ]
 		then
 			echo "KERNEL UPGRADE WORKED"
 			rm -f $KERNEL_NEW
 			rm -f /Release/ker_ver
-			echo "$curdate: $KERNEL_NEW success. Replace all codecs with new ones" >> vpad.log
+			echo "$curdate: $KERNEL_NEW success. Replace all codecs with new ones" >> hack.log
 	
 			mv -f $DAVINCI_HRT_DRIVER_CODEC_NEW $DAVINCI_HRT_DRIVER_CODEC              
 			if [ $? -eq 0 ]
 			then	
-				echo "$curdate: mv $DAVINCI_HRT_DRIVER_CODEC_NEW $DAVINCI_RSZ_DRIVER_CODEC" >> vpad.log
+				echo "$curdate: mv $DAVINCI_HRT_DRIVER_CODEC_NEW $DAVINCI_RSZ_DRIVER_CODEC" >> hack.log
 			fi
 			mv -f $DAVINCI_RSZ_DRIVER_CODEC_NEW $DAVINCI_RSZ_DRIVER_CODEC
 			if [ $? -eq 0 ]
 			then	
-				echo "$curdate: mv $DAVINCI_RSZ_DRIVER_CODEC_NEW $DAVINCI_RSZ_DRIVER_CODEC" >> vpad.log
+				echo "$curdate: mv $DAVINCI_RSZ_DRIVER_CODEC_NEW $DAVINCI_RSZ_DRIVER_CODEC" >> hack.log
 			fi
 
 			mv -f $DSP_LINK_CODEC_256_NEW $DSP_LINK_CODEC_256
 			if [ $? -eq 0 ]
 			then	
-				echo "$curdate: mv $DSP_LINK_CODEC_256_NEW $DSP_LINK_CODEC_256" >> vpad.log
+				echo "$curdate: mv $DSP_LINK_CODEC_256_NEW $DSP_LINK_CODEC_256" >> hack.log
 				rm -f $DSP_LINK_CODEC
 				ln -s $DSP_LINK_CODEC_256 $DSP_LINK_CODEC
-				echo "$curdate: executed ln -s $DSP_LINK_CODEC_256 $DSP_LINK_CODEC" >> vpad.log
+				echo "$curdate: executed ln -s $DSP_LINK_CODEC_256 $DSP_LINK_CODEC" >> hack.log
 			fi
 			mv -f $IPVP_MKIT_DSP_CODEC_256_NEW $IPVP_MKIT_DSP_CODEC_256
 			if [ $? -eq 0 ]
 			then	
-				echo "$curdate: mv $IPVP_MKIT_DSP_CODEC_256_NEW $IPVP_MKIT_DSP_CODEC_256" >> vpad.log
+				echo "$curdate: mv $IPVP_MKIT_DSP_CODEC_256_NEW $IPVP_MKIT_DSP_CODEC_256" >> hack.log
 				rm -f $IPVP_MKIT_DSP_CODEC
 				ln -s $IPVP_MKIT_DSP_CODEC_256 $IPVP_MKIT_DSP_CODEC
-				echo "$curdate: executed ln -s $IPVP_MKIT_DSP_CODEC_256 $IPVP_MKIT_DSP_CODEC" >> vpad.log
+				echo "$curdate: executed ln -s $IPVP_MKIT_DSP_CODEC_256 $IPVP_MKIT_DSP_CODEC" >> hack.log
 			fi
 
 			if [ -e /Release/bootenv_up ]
 			then
 				if [ -e /Release/change_memsize_213M ]
 				then
-					echo '$curdate: Already changed memsize' >> vpad.log
+					echo '$curdate: Already changed memsize' >> hack.log
 				else
 					chmod u+x /Release/bootenv_up
-					/Release/bootenv_up memsize=213M 2> vpad.log
+					/Release/bootenv_up memsize=213M 2> hack.log
 					echo 'memsize : 213M' >> change_memsize_213M
 					if [ -e /Release/change_memsize_88M ]
 					then
 						rm /Release/change_memsize_88M
-						echo "$curdate: rm change_memsize_88M" >> vpad.log
+						echo "$curdate: rm change_memsize_88M" >> hack.log
 					fi
 				fi
 			fi
@@ -402,48 +402,48 @@ then
 			if [ -e $DSP_LINK_CODEC_128 ]
 			then
 				rm $DSP_LINK_CODEC_128
-				echo "$curdate: rm $DSP_LINK_CODEC_128" >> vpad.log
+				echo "$curdate: rm $DSP_LINK_CODEC_128" >> hack.log
 			fi
 
 			if [ -e $IPVP_MKIT_DSP_CODEC_128 ]
 			then
 				rm $IPVP_MKIT_DSP_CODEC_128
-				echo "$curdate: rm $IPVP_MKIT_DSP_CODEC_128" >> vpad.log
+				echo "$curdate: rm $IPVP_MKIT_DSP_CODEC_128" >> hack.log
 			fi
 
 			mv -f $CMEM_CODEC_NEW $CMEM_CODEC
 			if [ $? -eq 0 ]
 			then	
-				echo "$curdate: mv $CMEM_CODEC_NEW $CMEM_CODEC" >> vpad.log
+				echo "$curdate: mv $CMEM_CODEC_NEW $CMEM_CODEC" >> hack.log
 			fi
 			mv -f $LOADMODULES_NEW $LOADMODULES
 			if [ $? -eq 0 ]
 			then	
-				echo "$curdate: mv $LOADMODULES_NEW $LOADMODULES" >> vpad.log
+				echo "$curdate: mv $LOADMODULES_NEW $LOADMODULES" >> hack.log
 			fi
 
 			mv -f $EPCONFIG_NEW $EPCONFIG
 			if [ $? -eq 0 ]
 			then
-			        echo "$curdate: mv $EPCONFIG_NEW $EPCONFIG" >> vpad.log
+			        echo "$curdate: mv $EPCONFIG_NEW $EPCONFIG" >> hack.log
 			fi
 	
-			mv -f $VPAD_BOOT_NEW /root/$VPAD_BOOT
+			mv -f $HACK_BOOT_NEW /root/$HACK_BOOT
 			if [ $? -eq 0 ]
 			then	
-				echo "$curdate: mv $VPAD_BOOT_NEW $VPAD_BOOT" >> vpad.log
+				echo "$curdate: mv $HACK_BOOT_NEW $HACK_BOOT" >> hack.log
 			fi
 	
 	                mv -f $USBINIT_NEW /etc/init.d/$USBINIT
 	                if [ $? -eq 0 ]
 	                then
-	                echo "$curdate: mv $USBINIT_NEW /etc/init.d/$USBINIT" >> vpad.log
+	                echo "$curdate: mv $USBINIT_NEW /etc/init.d/$USBINIT" >> hack.log
 			fi
 	
 			rm $POINTERCAL
 
 			rm $KERNEL_MD5
-			rm $VPAD_BOOT_MD5
+			rm $HACK_BOOT_MD5
 			rm $DAVINCI_HRT_DRIVER_MD5           
 			rm $DAVINCI_RSZ_DRIVER_MD5                
 			rm $DSP_LINK_256_MD5               
@@ -457,34 +457,34 @@ then
 	
 			rm /Release/cfg/*
 	
-			echo "$curdate: rm $POINTERCAL" >> vpad.log
-			echo "$curdate: rm $KERNEL_MD5" >> vpad.log
-			echo "$curdate: rm $KERNEL_MD5" >> vpad.log
-			echo "$curdate: rm $VPAD_BOOT_MD5" >> vpad.log
-			echo "$curdate: rm $DAVINCI_HRT_DRIVER_MD5" >> vpad.log
-			echo "$curdate: rm $DAVINCI_RSZ_DRIVER_MD5" >> vpad.log
-			echo "$curdate: rm $DSP_LINK_256_MD5"  >> vpad.log
-			echo "$curdate: rm $IPVP_MKIT_DSP_256_MD5" >> vpad.log
-			echo "$curdate: rm $CMEM_MD5" >> vpad.log
-			echo "$curdate: rm $LOADMODULES_MD5" >> vpad.log
-			echo "$curdate: rm $EPCONFIG_MD5" >> vpad.log
-			echo "$curdate: rm $USBINIT_MD5" >> vpad.log
-			echo "$curdate: rm $KERNEL_UP_MD5" >> vpad.log
-			echo "$curdate: rm *.tar*" >> vpad.log
+			echo "$curdate: rm $POINTERCAL" >> hack.log
+			echo "$curdate: rm $KERNEL_MD5" >> hack.log
+			echo "$curdate: rm $KERNEL_MD5" >> hack.log
+			echo "$curdate: rm $HACK_BOOT_MD5" >> hack.log
+			echo "$curdate: rm $DAVINCI_HRT_DRIVER_MD5" >> hack.log
+			echo "$curdate: rm $DAVINCI_RSZ_DRIVER_MD5" >> hack.log
+			echo "$curdate: rm $DSP_LINK_256_MD5"  >> hack.log
+			echo "$curdate: rm $IPVP_MKIT_DSP_256_MD5" >> hack.log
+			echo "$curdate: rm $CMEM_MD5" >> hack.log
+			echo "$curdate: rm $LOADMODULES_MD5" >> hack.log
+			echo "$curdate: rm $EPCONFIG_MD5" >> hack.log
+			echo "$curdate: rm $USBINIT_MD5" >> hack.log
+			echo "$curdate: rm $KERNEL_UP_MD5" >> hack.log
+			echo "$curdate: rm *.tar*" >> hack.log
 		else
-			echo "$curdate: $KERNEL_NEW failed to install" >> vpad.log
-			echo "$curdate: removing all new files and restore to previous state" >> vpad.log
+			echo "$curdate: $KERNEL_NEW failed to install" >> hack.log
+			echo "$curdate: removing all new files and restore to previous state" >> hack.log
 		
 			rmfiles	
 			exit 2
 		fi
 	else
-		echo "new kernel_up failed to replace old kernel_up" >> vpad.log
+		echo "new kernel_up failed to replace old kernel_up" >> hack.log
 		rmfiles
 	fi
 
 else
-	echo "some files not found or board is not 256MB size" >> vpad.log
+	echo "some files not found or board is not 256MB size" >> hack.log
 	rmfiles
 fi
 			

@@ -12,18 +12,31 @@ echo "Type the directory that you want to move files to, followed by [ENTER]:"
 
 read directory
 
-if [ -d "$directory" ]
+if [ ! -d "$directory" ]
 then
-	for x in $files
-	do
-		if [ ! -d "$x" ]
-		then
-	  		echo "moving $x to $directory"
-			mv $x $directory
+	echo Directory $directory does not exist.
+  echo
+  echo Would you like to create $directory [y/n]?
 
-		fi
-	done
-else
-	echo Directory $directory does not exist. Aborting.
+  read answer
+
+  if [ $answer == 'y' ]
+  then
+    mkdir $directory
+  else
+    echo
+    echo Aborting.
+    echo
+    exit
+  fi
 fi
 
+for x in $files
+do
+  if [ ! -d "$x" ]
+  then
+      echo "moving $x to $directory"
+    mv $x $directory
+
+  fi
+done

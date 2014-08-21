@@ -1,13 +1,13 @@
 #!/bin/bash
 
-#VIABLE
-VIABLEPATH=VIABLE/vPad/src/
+#OPEN
+OPENPATH=OPEN/hack/src/
 #SBN
-#VIABLEPATH=VIABLE/sbn_vpad/src/
-cd $VIABLEPATH
+#OPENPATH=OPEN/sbn_hack/src/
+cd $OPENPATH
 export LANG=""
 ########################################################################################################
-###"WARNING: you must be at the base level of vpad project in order for 'updateFW' to run correctly!"###
+###"WARNING: you must be at the base level of hack project in order for 'updateFW' to run correctly!"###
 ########################################################################################################
 
 if [ -f appVersion.dat ]

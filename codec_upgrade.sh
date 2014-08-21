@@ -41,12 +41,12 @@ then
 	then
 		echo "revision file missing" > revision.txt
 	fi
-	echo >> vpad.log
-	echo "====================================================================" >> vpad.log
-	echo "revision: $(cat revision.txt)" >> vpad.log
-	echo "date: $curdate" >> vpad.log
-	echo "====================================================================" >> vpad.log
-	echo >> vpad.log
+	echo >> nick.log
+	echo "====================================================================" >> nick.log
+	echo "revision: $(cat revision.txt)" >> nick.log
+	echo "date: $curdate" >> nick.log
+	echo "====================================================================" >> nick.log
+	echo >> nick.log
 	echo "New codec files found"
 
 	if [ ! -e $DAVINCI_HRT_DRIVER_MD5 -o ! -e $DAVINCI_RSZ_DRIVER_MD5 -o ! -e $DSP_LINK_128_MD5 -o ! -e $DSP_LINK_256_MD5 -o ! -e $IPVP_MKIT_DSP_128_MD5 -o -e $IPVP_MKIT_DSP_256_MD5 -o ! -e $CMEM_MD5 -o ! -e $LOADMODULES_MD5 ]
@@ -69,7 +69,7 @@ then
 		rm $CMEM_MD5
 		rm $LOADMODULES_MD5
 
-		echo "$curdate: Codec checksum file(s) missing: remove new codecs and abort codec upgrade" >> vpad.log
+		echo "$curdate: Codec checksum file(s) missing: remove new codecs and abort codec upgrade" >> nick.log
 
 		exit
 	fi
@@ -136,7 +136,7 @@ then
                 rm $IPVP_MKIT_DSP_256_MD5
                 rm $CMEM_MD5
                 rm $LOADMODULES_MD5
-		echo "$curdate: One checksum doesn't match digest: abort codec upgrade" >> vpad.log
+		echo "$curdate: One checksum doesn't match digest: abort codec upgrade" >> nick.log
 	else
 		echo "Checksums ok: replace all codecs with new ones"
 		mv $DAVINCI_HRT_DRIVER_CODEC_NEW $DAVINCI_HRT_DRIVER_CODEC		
@@ -152,22 +152,22 @@ then
                 rm $CMEM_MD5
                 rm $LOADMODULES_MD5
 
-		echo "$curdate: Checksums ok: replace all codecs with new ones" >> vpad.log
-		echo "$curdate:	mv $DAVINCI_RSZ_DRIVER_CODEC_NEW $DAVINCI_RSZ_DRIVER_CODEC" >> vpad.log
-		echo "$curdate:	mv $DSP_LINK_CODEC_128_NEW $DSP_LINK_CODEC_128" >> vpad.log
-		echo "$curdate:	mv $DSP_LINK_CODEC_256_NEW $DSP_LINK_CODEC_256" >> vpad.log
-		echo "$curdate:	mv $IPVP_MKIT_DSP_CODEC_128_NEW $IPVP_MKIT_DSP_CODEC_128" >> vpad.log
-		echo "$curdate:	mv $IPVP_MKIT_DSP_CODEC_256_NEW $IPVP_MKIT_DSP_CODEC_256" >> vpad.log
-		echo "$curdate:	mv $CMEM_CODEC_NEW $CMEM_CODEC" >> vpad.log
-		echo "$curdate:	mv $LOADMODULES_NEW $LOADMODULES" >> vpad.log
-		echo "$curdate:	rm $DAVINCI_HRT_DRIVER_MD5" >> vpad.log
-		echo "$curdate: rm $DAVINCI_RSZ_DRIVER_MD5" >> vpad.log
-		echo "$curdate: rm $DSP_LINK_128_MD5"  >> vpad.log
-		echo "$curdate: rm $DSP_LINK_256_MD5"  >> vpad.log
-		echo "$curdate: rm $IPVP_MKIT_DSP_128_MD5" >> vpad.log
-		echo "$curdate: rm $IPVP_MKIT_DSP_256_MD5" >> vpad.log
-		echo "$curdate: rm $CMEM_MD5" >> vpad.log
-		echo "$curdate: rm $LOADMODULES_MD5" >> vpad.log
+		echo "$curdate: Checksums ok: replace all codecs with new ones" >> nick.log
+		echo "$curdate:	mv $DAVINCI_RSZ_DRIVER_CODEC_NEW $DAVINCI_RSZ_DRIVER_CODEC" >> nick.log
+		echo "$curdate:	mv $DSP_LINK_CODEC_128_NEW $DSP_LINK_CODEC_128" >> nick.log
+		echo "$curdate:	mv $DSP_LINK_CODEC_256_NEW $DSP_LINK_CODEC_256" >> nick.log
+		echo "$curdate:	mv $IPVP_MKIT_DSP_CODEC_128_NEW $IPVP_MKIT_DSP_CODEC_128" >> nick.log
+		echo "$curdate:	mv $IPVP_MKIT_DSP_CODEC_256_NEW $IPVP_MKIT_DSP_CODEC_256" >> nick.log
+		echo "$curdate:	mv $CMEM_CODEC_NEW $CMEM_CODEC" >> nick.log
+		echo "$curdate:	mv $LOADMODULES_NEW $LOADMODULES" >> nick.log
+		echo "$curdate:	rm $DAVINCI_HRT_DRIVER_MD5" >> nick.log
+		echo "$curdate: rm $DAVINCI_RSZ_DRIVER_MD5" >> nick.log
+		echo "$curdate: rm $DSP_LINK_128_MD5"  >> nick.log
+		echo "$curdate: rm $DSP_LINK_256_MD5"  >> nick.log
+		echo "$curdate: rm $IPVP_MKIT_DSP_128_MD5" >> nick.log
+		echo "$curdate: rm $IPVP_MKIT_DSP_256_MD5" >> nick.log
+		echo "$curdate: rm $CMEM_MD5" >> nick.log
+		echo "$curdate: rm $LOADMODULES_MD5" >> nick.log
 	fi
 fi
 
